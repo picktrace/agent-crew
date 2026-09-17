@@ -1,0 +1,902 @@
+{
+    "$schema": "./node_modules/oxlint/configuration_schema.json",
+    "plugins": ["import", "node", "react", "jsx-a11y", "typescript", "unicorn"],
+    "jsPlugins": [
+        "oxlint-plugin-eslint",
+        {
+            "name": "import-js",
+            "specifier": "eslint-plugin-import"
+        },
+        "./agent-crew-lint-rules/index.cjs"
+    ],
+    "categories": {
+        "correctness": "off"
+    },
+    "env": {
+        "builtin": true,
+        "es2018": true,
+        "browser": true,
+        "jest": true,
+        "node": true
+    },
+    "options": {
+        "reportUnusedDisableDirectives": "error"
+    },
+    "settings": {
+        "react": {
+            "version": "18.3.1"
+        },
+        "propWrapperFunctions": ["forbidExtraProps", "exact", "Object.freeze"]
+    },
+    "ignorePatterns": ["out/", "dist/"],
+    "rules": {
+        "array-callback-return": [
+            "error",
+            {
+                "allowImplicit": true,
+                "checkForEach": false,
+                "allowVoid": false
+            }
+        ],
+        "block-scoped-var": ["error"],
+        "default-case": [
+            "error",
+            {
+                "commentPattern": "^no default$"
+            }
+        ],
+        "default-case-last": ["error"],
+        "default-param-last": ["error"],
+        "eqeqeq": [
+            "error",
+            "always",
+            {
+                "null": "ignore"
+            }
+        ],
+        "eslint-js/no-restricted-syntax": [
+            "error",
+            {
+                "selector": "ForInStatement",
+                "message": "for..in loops iterate over the entire prototype chain, which is virtually never what you want. Use Object.{keys,values,entries}, and iterate over the resulting array."
+            },
+            {
+                "selector": "LabeledStatement",
+                "message": "Labels are a form of GOTO; using them makes code confusing and hard to maintain and understand."
+            },
+            {
+                "selector": "WithStatement",
+                "message": "`with` is disallowed in strict mode because it makes code impossible to predict and optimize."
+            }
+        ],
+        "eslint-js/spaced-comment": [
+            "error",
+            "always",
+            {
+                "line": {
+                    "exceptions": ["-", "+"],
+                    "markers": ["=", "!", "/"]
+                },
+                "block": {
+                    "exceptions": ["-", "+"],
+                    "markers": ["=", "!", ":", "::"],
+                    "balanced": true
+                }
+            }
+        ],
+        "for-direction": ["error"],
+        "func-names": ["warn", "always", {}],
+        "grouped-accessor-pairs": [
+            "error",
+            "anyOrder",
+            {
+                "enforceForTSTypes": false
+            }
+        ],
+        "guard-for-in": ["error"],
+        "import-js/no-extraneous-dependencies": [
+            "error",
+            {
+                "devDependencies": ["**/*.test.ts?(x)", "**/__tests__/**/*.ts?(x)", "**/*.stories.@(tsx|mdx)"]
+            }
+        ],
+        "import-js/no-import-module-exports": [
+            "error",
+            {
+                "exceptions": []
+            }
+        ],
+        "import-js/no-relative-packages": ["error"],
+        "import-js/no-useless-path-segments": [
+            "error",
+            {
+                "commonjs": true
+            }
+        ],
+        "import-js/order": [
+            "error",
+            {
+                "groups": [["builtin", "external", "internal"]],
+                "distinctGroup": true,
+                "sortTypesGroup": false,
+                "named": false,
+                "warnOnUnassignedImports": false
+            }
+        ],
+        "import/default": ["error"],
+        "import/extensions": [
+            "error",
+            "ignorePackages",
+            {
+                "js": "never",
+                "mjs": "never",
+                "jsx": "never",
+                "ts": "never",
+                "tsx": "never"
+            }
+        ],
+        "import/first": ["error"],
+        "import/namespace": ["error"],
+        "import/newline-after-import": ["error"],
+        "import/no-absolute-path": ["error"],
+        "import/no-amd": ["error"],
+        "import/no-default-export": ["error"],
+        "import/no-duplicates": ["warn"],
+        "import/no-dynamic-require": ["error"],
+        "import/no-mutable-exports": ["error"],
+        "import/no-named-as-default": ["warn"],
+        "import/no-named-as-default-member": ["error"],
+        "import/no-named-default": ["error"],
+        "import/no-self-import": ["error"],
+        "import/no-webpack-loader-syntax": ["error"],
+        "jsx-a11y/alt-text": [
+            "error",
+            {
+                "elements": ["img", "object", "area", "input[type=\"image\"]"],
+                "img": [],
+                "object": [],
+                "area": [],
+                "input[type=\"image\"]": []
+            }
+        ],
+        "jsx-a11y/anchor-has-content": ["error"],
+        "jsx-a11y/aria-activedescendant-has-tabindex": ["error"],
+        "jsx-a11y/aria-props": ["error"],
+        "jsx-a11y/aria-proptypes": ["error"],
+        "jsx-a11y/aria-role": [
+            "error",
+            {
+                "ignoreNonDOM": false
+            }
+        ],
+        "jsx-a11y/aria-unsupported-elements": ["error"],
+        "jsx-a11y/autocomplete-valid": [
+            "error",
+            {
+                "inputComponents": []
+            }
+        ],
+        "jsx-a11y/click-events-have-key-events": ["error"],
+        "jsx-a11y/heading-has-content": [
+            "error",
+            {
+                "components": [""]
+            }
+        ],
+        "jsx-a11y/html-has-lang": ["error"],
+        "jsx-a11y/iframe-has-title": ["error"],
+        "jsx-a11y/img-redundant-alt": ["error"],
+        "jsx-a11y/interactive-supports-focus": [
+            "error",
+            {
+                "tabbable": ["button", "checkbox", "link", "searchbox", "spinbutton", "switch", "textbox"]
+            }
+        ],
+        "jsx-a11y/label-has-associated-control": [
+            "error",
+            {
+                "labelComponents": [],
+                "labelAttributes": [],
+                "controlComponents": [],
+                "assert": "either",
+                "depth": 25
+            }
+        ],
+        "jsx-a11y/lang": ["error"],
+        "jsx-a11y/media-has-caption": [
+            "error",
+            {
+                "audio": [],
+                "video": [],
+                "track": []
+            }
+        ],
+        "jsx-a11y/mouse-events-have-key-events": ["error"],
+        "jsx-a11y/no-access-key": ["error"],
+        "jsx-a11y/no-autofocus": [
+            "error",
+            {
+                "ignoreNonDOM": true
+            }
+        ],
+        "jsx-a11y/no-distracting-elements": [
+            "error",
+            {
+                "elements": ["marquee", "blink"]
+            }
+        ],
+        "jsx-a11y/no-interactive-element-to-noninteractive-role": [
+            "error",
+            {
+                "tr": ["none", "presentation"],
+                "canvas": ["img"]
+            }
+        ],
+        "jsx-a11y/no-noninteractive-element-interactions": [
+            "error",
+            {
+                "handlers": [
+                    "onClick",
+                    "onError",
+                    "onLoad",
+                    "onMouseDown",
+                    "onMouseUp",
+                    "onKeyPress",
+                    "onKeyDown",
+                    "onKeyUp"
+                ],
+                "alert": ["onKeyUp", "onKeyDown", "onKeyPress"],
+                "body": ["onError", "onLoad"],
+                "dialog": ["onKeyUp", "onKeyDown", "onKeyPress"],
+                "iframe": ["onError", "onLoad"],
+                "img": ["onError", "onLoad"]
+            }
+        ],
+        "jsx-a11y/no-noninteractive-element-to-interactive-role": [
+            "error",
+            {
+                "ul": ["listbox", "menu", "menubar", "radiogroup", "tablist", "tree", "treegrid"],
+                "ol": ["listbox", "menu", "menubar", "radiogroup", "tablist", "tree", "treegrid"],
+                "li": ["menuitem", "menuitemradio", "menuitemcheckbox", "option", "row", "tab", "treeitem"],
+                "table": ["grid"],
+                "td": ["gridcell"],
+                "fieldset": ["radiogroup", "presentation"]
+            }
+        ],
+        "jsx-a11y/no-noninteractive-tabindex": [
+            "error",
+            {
+                "tags": [],
+                "roles": ["tabpanel"],
+                "allowExpressionValues": true
+            }
+        ],
+        "jsx-a11y/no-redundant-roles": ["error"],
+        "jsx-a11y/no-static-element-interactions": [
+            "error",
+            {
+                "allowExpressionValues": true,
+                "handlers": ["onClick", "onMouseDown", "onMouseUp", "onKeyPress", "onKeyDown", "onKeyUp"]
+            }
+        ],
+        "jsx-a11y/role-has-required-aria-props": ["error"],
+        "jsx-a11y/role-supports-aria-props": ["error"],
+        "jsx-a11y/scope": ["error"],
+        "jsx-a11y/tabindex-no-positive": ["error"],
+        "max-classes-per-file": ["error", 1],
+        "new-cap": [
+            "error",
+            {
+                "capIsNew": false,
+                "capIsNewExceptions": ["Immutable.Map", "Immutable.Set", "Immutable.List"],
+                "newIsCap": true,
+                "newIsCapExceptions": [],
+                "properties": true
+            }
+        ],
+        "no-alert": ["warn"],
+        "no-array-constructor": ["error"],
+        "no-async-promise-executor": ["error"],
+        "no-await-in-loop": ["error"],
+        "no-bitwise": [
+            "error",
+            {
+                "allow": [],
+                "int32Hint": false
+            }
+        ],
+        "no-caller": ["error"],
+        "no-case-declarations": ["error"],
+        "no-class-assign": ["error"],
+        "no-compare-neg-zero": ["error"],
+        "no-cond-assign": ["error", "always"],
+        "no-console": ["error", {}],
+        "no-constant-binary-expression": ["error"],
+        "no-constant-condition": [
+            "warn",
+            {
+                "checkLoops": "allExceptWhileTrue"
+            }
+        ],
+        "no-constructor-return": ["error"],
+        "no-control-regex": ["error"],
+        "no-debugger": ["error"],
+        "no-delete-var": ["error"],
+        "no-dupe-class-members": ["error"],
+        "no-dupe-else-if": ["error"],
+        "no-duplicate-case": ["error"],
+        "no-else-return": [
+            "error",
+            {
+                "allowElseIf": false
+            }
+        ],
+        "no-empty": [
+            "error",
+            {
+                "allowEmptyCatch": false
+            }
+        ],
+        "no-empty-character-class": ["error"],
+        "no-empty-function": [
+            "error",
+            {
+                "allow": ["arrowFunctions", "functions", "methods"]
+            }
+        ],
+        "no-empty-pattern": [
+            "error",
+            {
+                "allowObjectPatternsAsParameters": false
+            }
+        ],
+        "no-empty-static-block": ["error"],
+        "no-eval": [
+            "error",
+            {
+                "allowIndirect": false
+            }
+        ],
+        "no-ex-assign": ["error"],
+        "no-extend-native": [
+            "error",
+            {
+                "exceptions": []
+            }
+        ],
+        "no-extra-bind": ["error"],
+        "no-extra-boolean-cast": ["error", {}],
+        "no-extra-label": ["error"],
+        "no-fallthrough": [
+            "error",
+            {
+                "allowEmptyCase": false,
+                "reportUnusedFallthroughComment": false
+            }
+        ],
+        "no-global-assign": [
+            "error",
+            {
+                "exceptions": []
+            }
+        ],
+        "no-inner-declarations": [
+            "error",
+            "functions",
+            {
+                "blockScopedFunctions": "allow"
+            }
+        ],
+        "no-invalid-regexp": ["error", {}],
+        "no-irregular-whitespace": [
+            "error",
+            {
+                "skipComments": false,
+                "skipJSXText": false,
+                "skipRegExps": false,
+                "skipStrings": true,
+                "skipTemplates": false
+            }
+        ],
+        "no-iterator": ["error"],
+        "no-label-var": ["error"],
+        "no-labels": [
+            "error",
+            {
+                "allowLoop": false,
+                "allowSwitch": false
+            }
+        ],
+        "no-lone-blocks": ["error"],
+        "no-lonely-if": ["error"],
+        "no-loop-func": ["error"],
+        "no-loss-of-precision": ["error"],
+        "no-misleading-character-class": [
+            "error",
+            {
+                "allowEscape": false
+            }
+        ],
+        "no-multi-assign": [
+            "error",
+            {
+                "ignoreNonDeclaration": false
+            }
+        ],
+        "no-multi-str": ["error"],
+        "no-nested-ternary": ["error"],
+        "no-new": ["error"],
+        "no-new-native-nonconstructor": ["error"],
+        "no-new-wrappers": ["error"],
+        "no-nonoctal-decimal-escape": ["error"],
+        "no-object-constructor": ["error"],
+        "no-param-reassign": [
+            "error",
+            {
+                "props": false
+            }
+        ],
+        "no-proto": ["error"],
+        "no-prototype-builtins": ["error"],
+        "no-redeclare": ["error"],
+        "no-regex-spaces": ["error"],
+        "no-restricted-globals": [
+            "error",
+            {
+                "name": "isFinite",
+                "message": "Use Number.isFinite instead https://github.com/airbnb/javascript#standard-library--isfinite"
+            },
+            {
+                "name": "isNaN",
+                "message": "Use Number.isNaN instead https://github.com/airbnb/javascript#standard-library--isnan"
+            },
+            "addEventListener",
+            "blur",
+            "close",
+            "closed",
+            "confirm",
+            "defaultStatus",
+            "defaultstatus",
+            "event",
+            "external",
+            "find",
+            "focus",
+            "frameElement",
+            "frames",
+            "history",
+            "innerHeight",
+            "innerWidth",
+            "length",
+            "location",
+            "locationbar",
+            "menubar",
+            "moveBy",
+            "moveTo",
+            "name",
+            "onblur",
+            "onerror",
+            "onfocus",
+            "onload",
+            "onresize",
+            "onunload",
+            "open",
+            "opener",
+            "opera",
+            "outerHeight",
+            "outerWidth",
+            "pageXOffset",
+            "pageYOffset",
+            "parent",
+            "print",
+            "removeEventListener",
+            "resizeBy",
+            "resizeTo",
+            "screen",
+            "screenLeft",
+            "screenTop",
+            "screenX",
+            "screenY",
+            "scroll",
+            "scrollbars",
+            "scrollBy",
+            "scrollTo",
+            "scrollX",
+            "scrollY",
+            "self",
+            "status",
+            "statusbar",
+            "stop",
+            "toolbar",
+            "top"
+        ],
+        "no-restricted-imports": [
+            "error",
+            {
+                "paths": [
+                    "@material-ui/core/Button",
+                    "@material-ui/core/FormControlLabel",
+                    "@material-ui/core/FormHelperText",
+                    "@material-ui/core/Tab",
+                    "@material-ui/core/TextField",
+                    "@material-ui/core/Typography",
+                    "@material-ui/icons",
+                    "@material-ui/lab/Alert",
+                    "@material-ui/lab/ToggleButton",
+                    "@material-ui/lab/ToggleButtonGroup",
+                    {
+                        "name": "@material-ui/core",
+                        "importNames": [
+                            "Button",
+                            "ButtonProps",
+                            "FormControlLabel",
+                            "FormControlLabelProps",
+                            "FormHelperText",
+                            "FormHelperTextProps",
+                            "Tab",
+                            "TabProps",
+                            "TextField",
+                            "TextFieldProps",
+                            "Typography",
+                            "TypographyProps"
+                        ],
+                        "message": "Please use import from @picktrace/components instead for translation support"
+                    },
+                    {
+                        "name": "@material-ui/lab",
+                        "importNames": [
+                            "Alert",
+                            "AlertProps",
+                            "ToggleButton",
+                            "ToggleButtonGroup",
+                            "ToggleButtonProps",
+                            "ToggleButtonGroupProps"
+                        ],
+                        "message": "Please use import from @picktrace/components instead for translation support"
+                    },
+                    {
+                        "name": "luxon",
+                        "importNames": ["DateTime"],
+                        "message": "Avoid using Luxon library, please use dtUtil from @utils package"
+                    },
+                    {
+                        "name": "dayjs",
+                        "message": "Avoid using Dayjs library, please use dtUtil from @utils package"
+                    }
+                ],
+                "patterns": ["!@material-ui/core/test-utils/*"]
+            }
+        ],
+        "no-restricted-properties": [
+            "error",
+            {
+                "object": "arguments",
+                "property": "callee",
+                "message": "arguments.callee is deprecated"
+            },
+            {
+                "object": "global",
+                "property": "isFinite",
+                "message": "Please use Number.isFinite instead"
+            },
+            {
+                "object": "self",
+                "property": "isFinite",
+                "message": "Please use Number.isFinite instead"
+            },
+            {
+                "object": "window",
+                "property": "isFinite",
+                "message": "Please use Number.isFinite instead"
+            },
+            {
+                "object": "global",
+                "property": "isNaN",
+                "message": "Please use Number.isNaN instead"
+            },
+            {
+                "object": "self",
+                "property": "isNaN",
+                "message": "Please use Number.isNaN instead"
+            },
+            {
+                "object": "window",
+                "property": "isNaN",
+                "message": "Please use Number.isNaN instead"
+            },
+            {
+                "property": "__defineGetter__",
+                "message": "Please use Object.defineProperty instead."
+            },
+            {
+                "property": "__defineSetter__",
+                "message": "Please use Object.defineProperty instead."
+            },
+            {
+                "object": "Math",
+                "property": "pow",
+                "message": "Use the exponentiation operator (**) instead."
+            }
+        ],
+        "no-return-assign": ["error", "always"],
+        "no-script-url": ["error"],
+        "no-self-assign": [
+            "error",
+            {
+                "props": true
+            }
+        ],
+        "no-self-compare": ["error"],
+        "no-sequences": [
+            "error",
+            {
+                "allowInParentheses": true
+            }
+        ],
+        "no-shadow": ["error"],
+        "no-shadow-restricted-names": [
+            "error",
+            {
+                "reportGlobalThis": false
+            }
+        ],
+        "no-sparse-arrays": ["error"],
+        "no-template-curly-in-string": ["error"],
+        "no-underscore-dangle": [
+            "error",
+            {
+                "allow": ["__REDUX_DEVTOOLS_EXTENSION_COMPOSE__"],
+                "allowAfterSuper": false,
+                "allowAfterThis": false,
+                "allowAfterThisConstructor": false,
+                "allowFunctionParams": true,
+                "allowInArrayDestructuring": true,
+                "allowInObjectDestructuring": true,
+                "enforceInClassFields": false,
+                "enforceInMethodNames": true
+            }
+        ],
+        "no-unneeded-ternary": [
+            "error",
+            {
+                "defaultAssignment": false
+            }
+        ],
+        "no-unsafe-finally": ["error"],
+        "no-unused-expressions": [
+            "error",
+            {
+                "allowShortCircuit": false,
+                "allowTaggedTemplates": false,
+                "allowTernary": false
+            }
+        ],
+        "no-unused-labels": ["error"],
+        "no-unused-vars": [
+            "error",
+            {
+                "ignoreRestSiblings": true,
+                "varsIgnorePattern": "React",
+                "caughtErrors": "none"
+            }
+        ],
+        "no-use-before-define": [
+            "error",
+            {
+                "functions": true,
+                "classes": true,
+                "variables": true
+            }
+        ],
+        "no-useless-backreference": ["error"],
+        "no-useless-catch": ["error"],
+        "no-useless-computed-key": [
+            "error",
+            {
+                "enforceForClassMembers": true
+            }
+        ],
+        "no-useless-concat": ["error"],
+        "no-useless-constructor": ["error"],
+        "no-useless-escape": [
+            "error",
+            {
+                "allowRegexCharacters": []
+            }
+        ],
+        "no-useless-rename": [
+            "error",
+            {
+                "ignoreDestructuring": false,
+                "ignoreImport": false,
+                "ignoreExport": false
+            }
+        ],
+        "no-useless-return": ["off"],
+        "no-var": ["error"],
+        "no-void": [
+            "error",
+            {
+                "allowAsStatement": false
+            }
+        ],
+        "no-with": ["error"],
+        "node/global-require": ["error"],
+        "node/no-new-require": ["error"],
+        "node/no-path-concat": ["error"],
+        "node/no-process-env": ["error"],
+        "object-shorthand": [
+            "error",
+            "always",
+            {
+                "ignoreConstructors": false,
+                "avoidQuotes": true
+            }
+        ],
+        "operator-assignment": ["error", "always"],
+        "prefer-const": [
+            "error",
+            {
+                "destructuring": "any",
+                "ignoreReadBeforeAssign": true
+            }
+        ],
+        "prefer-destructuring": [
+            "error",
+            {
+                "VariableDeclarator": {
+                    "array": false,
+                    "object": true
+                },
+                "AssignmentExpression": {
+                    "array": true,
+                    "object": false
+                }
+            },
+            {
+                "enforceForRenamedProperties": false
+            }
+        ],
+        "prefer-exponentiation-operator": ["error"],
+        "prefer-numeric-literals": ["error"],
+        "prefer-object-spread": ["error"],
+        "prefer-promise-reject-errors": [
+            "error",
+            {
+                "allowEmptyReject": true
+            }
+        ],
+        "prefer-regex-literals": [
+            "error",
+            {
+                "disallowRedundantWrapping": true
+            }
+        ],
+        "prefer-rest-params": ["error"],
+        "prefer-spread": ["error"],
+        "prefer-template": ["error"],
+        "radix": ["error", "always"],
+        "react/button-has-type": [
+            "error",
+            {
+                "button": true,
+                "submit": true,
+                "reset": false
+            }
+        ],
+        "react/jsx-boolean-value": [
+            "error",
+            "never",
+            {
+                "always": []
+            }
+        ],
+        "react/jsx-curly-brace-presence": [
+            "error",
+            {
+                "props": "never",
+                "children": "never"
+            }
+        ],
+        "react/jsx-filename-extension": [
+            "error",
+            {
+                "extensions": [".js", ".ts", "tsx"]
+            }
+        ],
+        "react/jsx-fragments": ["error", "syntax"],
+        "react/jsx-key": ["error"],
+        "react/jsx-no-comment-textnodes": ["error"],
+        "react/jsx-no-duplicate-props": ["error"],
+        "react/jsx-no-script-url": [
+            "error",
+            [
+                {
+                    "name": "Link",
+                    "props": ["to"]
+                }
+            ]
+        ],
+        "react/jsx-no-target-blank": [
+            "error",
+            {
+                "enforceDynamicLinks": "always",
+                "links": true,
+                "forms": false
+            }
+        ],
+        "react/jsx-no-undef": ["error"],
+        "react/jsx-pascal-case": [
+            "error",
+            {
+                "allowAllCaps": true,
+                "ignore": []
+            }
+        ],
+        "react/no-array-index-key": ["error"],
+        "react/no-children-prop": ["error"],
+        "react/no-danger": ["warn"],
+        "react/no-danger-with-children": ["error"],
+        "react/no-did-update-set-state": ["error"],
+        "react/no-direct-mutation-state": ["error"],
+        "react/no-find-dom-node": ["error"],
+        "react/no-is-mounted": ["error"],
+        "react/no-namespace": ["error"],
+        "react/no-redundant-should-component-update": ["error"],
+        "react/no-render-return-value": ["error"],
+        "react/no-string-refs": ["error"],
+        "react/no-this-in-sfc": ["error"],
+        "react/no-unescaped-entities": ["error"],
+        "react/no-unknown-property": ["error"],
+        "react/no-will-update-set-state": ["error"],
+        "react/prefer-es6-class": ["error", "always"],
+        "react/prefer-function-component": ["error"],
+        "react/rules-of-hooks": ["error"],
+        "react/self-closing-comp": ["error"],
+        "react/state-in-constructor": ["error", "always"],
+        "react/style-prop-object": ["error"],
+        "react/void-dom-elements-no-children": ["error"],
+        "require-yield": ["error"],
+        "symbol-description": ["error"],
+        "typescript/explicit-function-return-type": [
+            "error",
+            {
+                "allowExpressions": true,
+                "allowTypedFunctionExpressions": true
+            }
+        ],
+        "unicode-bom": ["error", "never"],
+        "unicorn/no-useless-undefined": [
+            "error",
+            {
+                "checkArguments": false,
+                "checkArrowFunctionBody": false
+            }
+        ],
+        "use-isnan": [
+            "error",
+            {
+                "enforceForIndexOf": false,
+                "enforceForSwitchCase": true
+            }
+        ],
+        "vars-on-top": ["error"],
+        "yoda": [
+            "error",
+            "never",
+            {
+                "exceptRange": false,
+                "onlyEquality": false
+            }
+        ]
+    },
+    "overrides": [
+        {
+            "files": ["*.config.ts", "script/**/*.mjs", "jest.config.js", "*-lint-rules/**/*.cjs"],
+            "rules": {
+                "import-js/no-extraneous-dependencies": "off",
+                "no-console": "off",
+                "no-bitwise": "off"
+            }
+        }
+    ]
+}

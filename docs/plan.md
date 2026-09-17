@@ -670,6 +670,77 @@ commits.
 4. Scrollback kept on disk, per pane.
 5. An agent launched into a pane, with its state read from hooks.
 6. The agent's session id recorded, so `claude --resume` works.
+7. One command that measures how the terminal performs, and prints the numbers.
+
+### The numbers we measure, and exactly how
+
+We measure from the first week. We do not set a budget yet, because a budget
+copied from another codebase measures their machine, and a budget set from our
+first run blesses whatever we happened to build.
+
+The order is: measure, compare to a known good reference, fix the gap if there
+is one, then write the number down.
+
+#### Timings
+
+Each one is the gap between two named points. Both points are recorded in the
+window, with `performance.now()`.
+
+| Metric | From | To |
+|---|---|---|
+| **key latency** | the `keydown` event fires | xterm paints the frame holding that character |
+| **pane switch** | the click handler fires | the new pane's first paint |
+| **restore** | the window reports ready | the pane's saved scrollback is drawn |
+| **resize redraw** | the `resize` event fires | the pty reports its new size, and the next frame is painted |
+| **scroll** | the `wheel` event fires | the frame is painted |
+
+For each one we report the **median** and the **worst**. An average hides the
+one keystroke in fifty that took 400 ms, and that is the one a person notices.
+
+#### Counters
+
+These are not timings. Two of them are correctness, not speed.
+
+| Counter | What it counts | Why |
+|---|---|---|
+| **queued characters** | bytes read from the pty, minus bytes handed to xterm | a busy agent writes faster than a screen draws |
+| **peak queued characters** | the highest that queue ever reached | one burst is enough to break it |
+| **dropped chunks** | any pty chunk we did not hand to xterm | **must be 0.** Dropping output is a bug, not slowness |
+| **listeners per pane** | subscriptions one pane registers | a tool in this space reached 48 before cutting to 17 |
+| **heap per pane** | heap used with N panes, minus heap with 0 | the leak this design is most likely to grow |
+
+#### The three scenarios
+
+Every metric is measured under all three. A terminal that is fast when idle and
+slow under load is a slow terminal.
+
+| Scenario | Setup | What it catches |
+|---|---|---|
+| **idle** | 1 pane, nothing running, type 100 characters | the floor |
+| **under load** | 1 pane, an agent printing without stopping, type 100 characters | the queue and the backlog |
+| **at scale** | 10 panes, 3 of them printing, type 100 characters in one | listeners, heap, and wasted work |
+
+#### How it runs
+
+Playwright drives the real Electron app. Not a mock, not a headless browser.
+The measurement has to include the real pty, the real xterm, and the real paint.
+
+```
+pnpm test:perf            all three scenarios, prints a table
+pnpm test:perf --json     the same, as JSON for a report
+```
+
+#### What we do with the numbers
+
+For now, nothing automatic. They print, and we read them.
+
+A budget lands once we have the metric running and a handful of runs, so we know
+what normal looks like on this code. `docs/evidence.md` holds reference numbers
+from a shipped tool in this space, under a heading that says exactly what they
+are. They are a sanity check, not a target.
+
+If our first measurement is far from that reference, the gap is a bug to find
+before any number is written down.
 
 ### What we are not doing, and why
 
@@ -700,6 +771,10 @@ oldest, with the cap in settings.
 4. A developer resizes the window and the agent redraws at the new size.
 5. A developer scrolls back and sees what the agent printed 10 minutes ago.
 6. A developer can resume yesterday's session in that folder.
+7. A developer runs one command and sees the median and worst time from keypress
+   to character on screen, under all three scenarios.
+8. A developer sees the queued character count and the dropped chunk count, and
+   dropped is 0.
 
 ---
 

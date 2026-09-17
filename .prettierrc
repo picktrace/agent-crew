@@ -1,0 +1,21 @@
+{
+    "arrowParens": "always",
+    "semi": false,
+    "useTabs": false,
+    "tabWidth": 4,
+    "bracketSpacing": true,
+    "singleQuote": true,
+    "singleAttributePerLine": false,
+    "bracketSameLine": false,
+    "printWidth": 120,
+    "trailingComma": "es5",
+    "endOfLine": "auto",
+    "overrides": [
+        {
+            "files": ["*.yml", "*.yaml"],
+            "options": {
+                "tabWidth": 2
+            }
+        }
+    ]
+}

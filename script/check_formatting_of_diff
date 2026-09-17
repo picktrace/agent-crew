@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+# script/check_formatting_of_diff
+#   Run prettier using the diff with "$1"
+#
+#   If not provided, $1 defaults to `origin/main...`
+
+set -e
+
+cd "$(dirname "$0")/.."
+
+diff_arg=${1:-origin/main...}
+
+git diff --name-only --diff-filter=d ${diff_arg} | xargs pnpm prettier --check --ignore-unknown

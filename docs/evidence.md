@@ -357,6 +357,45 @@ quadratic-buffer-concat.mjs
 
 ---
 
+### Reference numbers from a shipped terminal
+
+**These are not our budgets. We have not measured anything yet.**
+
+A shipped tool in this space checks these in its build, and fails when one is
+exceeded. They tell us two things: which numbers are worth measuring, and what
+order of magnitude counts as good.
+
+```
+maxMedianKeyLatencyMs           75
+maxWorstKeyLatencyMs           300
+maxRevisitLatencyMs            300
+maxScrollLatencyMs             150
+maxRestoreLatencyMs           1000
+maxTimerDriftMs                150
+maxTimerDriftUnderLoadMs      3500
+maxRendererQueuedChars     2097152
+maxRendererPeakQueuedChars 2097152
+maxRendererDroppedBacklogs       0
+```
+
+```bash
+gh api repos/<repo>/contents/config/scripts/check-terminal-perf-report-budgets.mjs \
+  --jq '.content' | base64 -d | grep -A12 'const BUDGETS'
+```
+
+The last line is the one to read twice. `maxRendererDroppedBacklogs: 0` is not a
+speed budget. Dropping output is a correctness bug, and the only acceptable
+count is none.
+
+**How we will use these.** As a sanity check, once. If our first measurement of
+median key latency is 400 ms and a shipped terminal does 75 ms, that gap is a
+bug to find. It is not a number to accept and write down.
+
+Our own budgets come from our own runs, after the gap is closed. Epic 1 in
+`docs/plan.md` has the metric definitions and the three scenarios.
+
+---
+
 ## What we have not measured
 
 Honest gaps. Each one is a claim in the design that rests on judgment, not a
@@ -370,3 +409,4 @@ number.
 | Each guardrail is about a day | an estimate |
 | 4 roles is the right set for people | a guess. D-17 says so |
 | The 10 epics are correctly sized | no epic has been built |
+| Any performance number for our own terminal | no terminal exists yet. Epic 1 story 7 measures it |

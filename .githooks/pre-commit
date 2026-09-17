@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+set -e
+
+pnpm lint:diff
+pnpm test
+pnpm tsc
+script/check_formatting_of_diff
