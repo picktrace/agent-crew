@@ -897,6 +897,12 @@
                 "no-console": "off",
                 "no-bitwise": "off"
             }
+        },
+        {
+            "files": ["src/app.ts", "src/preload.ts"],
+            "rules": {
+                "import-js/no-extraneous-dependencies": "off"
+            }
         }
     ]
 }
