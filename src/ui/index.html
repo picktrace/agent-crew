@@ -15,7 +15,13 @@
                     out.textContent = 'window crew is missing'
                     return
                 }
-                out.textContent = await window.crew.pickFolder()
+                const folder = await window.crew.pickFolder()
+                if (folder === null) {
+                    out.textContent = 'cancelled'
+                    return
+                }
+                const paneId = await window.crew.openPane(folder, 80, 24)
+                out.textContent = folder + '\npane ' + paneId
             }
         </script>
     </body>
