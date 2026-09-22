@@ -6,5 +6,17 @@
     </head>
     <body>
         <div id="root">Hello</div>
+        <button id="pick">Pick a folder</button>
+        <pre id="out">nothing yet</pre>
+        <script>
+            document.getElementById('pick').onclick = async () => {
+                const out = document.getElementById('out')
+                if (!window.crew) {
+                    out.textContent = 'window crew is missing'
+                    return
+                }
+                out.textContent = await window.crew.pickFolder()
+            }
+        </script>
     </body>
 </html>
