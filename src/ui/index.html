@@ -7,8 +7,11 @@
     <body>
         <div id="root">Hello</div>
         <button id="pick">Pick a folder</button>
+        <button id="drain">Drain once</button>
         <pre id="out">nothing yet</pre>
         <script>
+            let paneId = null
+
             document.getElementById('pick').onclick = async () => {
                 const out = document.getElementById('out')
                 if (!window.crew) {
@@ -20,8 +23,18 @@
                     out.textContent = 'cancelled'
                     return
                 }
-                const paneId = await window.crew.openPane(folder, 80, 24)
+                paneId = await window.crew.openPane(folder, 80, 24)
                 out.textContent = folder + '\npane ' + paneId
+            }
+
+            document.getElementById('drain').onclick = async () => {
+                const out = document.getElementById('out')
+                if (!window.crew || paneId === null) {
+                    out.textContent = 'pick a folder first'
+                    return
+                }
+                const result = await window.crew.drain(paneId)
+                out.textContent = JSON.stringify(result, null, 2)
             }
         </script>
     </body>

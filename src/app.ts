@@ -1,6 +1,6 @@
 import { app, BrowserWindow, dialog, ipcMain } from 'electron'
 import { join } from 'node:path'
-import { CrewChannel } from './bridge'
+import { CrewChannel, PaneDrain } from './bridge'
 import { resolveShell } from './engine/shell'
 import { OutputQueue } from './engine/terminal/outputQueue'
 import { nodePtyRuntime } from './engine/terminal/nodePtyRuntime'
@@ -10,6 +10,20 @@ let mainWindow: BrowserWindow | null = null
 let session: TerminalSession | null = null
 const pickFolderChannel: CrewChannel = 'crew:pickFolder'
 const openPaneChannel: CrewChannel = 'crew:openPane'
+const drainChannel: CrewChannel = 'crew:drain'
+
+async function pickFolder(): Promise<string | null> {
+    if (mainWindow === null) {
+        return null
+    }
+
+    const result = await dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] })
+    const folder = result.filePaths[0]
+    if (result.canceled || folder === undefined) {
+        return null
+    }
+    return folder
+}
 
 // node-pty hands us about 64 KB at a time. pauseAt must sit above one of those
 // bursts, or we pause on every burst. dropAt must sit above pauseAt plus one
@@ -31,22 +45,24 @@ function openPane(folder: string, columns: number, rows: number): string {
     return session.id
 }
 
-async function pickFolder(): Promise<string | null> {
-    if (mainWindow === null) {
-        return null
+function drain(paneId: string): PaneDrain {
+    if (session === null || session.id !== paneId) {
+        throw new Error(`no pane with id ${paneId}`)
     }
 
-    const result = await dialog.showOpenDialog(mainWindow, { properties: ['openDirectory'] })
-    const folder = result.filePaths[0]
-    if (result.canceled || folder === undefined) {
-        return null
+    return {
+        chunks: session.drain(),
+        isRunning: session.isRunning,
+        exitCode: session.exitCode,
+        exitSignal: session.exitSignal,
+        counters: session.counters(),
     }
-    return folder
 }
 
 app.whenReady().then(() => {
     ipcMain.handle(pickFolderChannel, () => pickFolder())
     ipcMain.handle(openPaneChannel, (_event, folder, columns, rows) => openPane(folder, columns, rows))
+    ipcMain.handle(drainChannel, (_event, paneId) => drain(paneId))
     mainWindow = new BrowserWindow({
         width: 1280,
         height: 800,
