@@ -1,0 +1,65 @@
+:root {
+    color-scheme: light;
+    --ink: #1a1410;
+    --paper: #fffcf5;
+    --rule: #e6ddcb;
+    --problem: #c2255c;
+    --mono: ui-monospace, 'SF Mono', Menlo, monospace;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family:
+        system-ui,
+        -apple-system,
+        sans-serif;
+    font-size: 14px;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 12px;
+    gap: 10px;
+}
+
+.pane {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    gap: 8px;
+}
+
+.screen {
+    flex: 1;
+    min-height: 0;
+    padding: 6px;
+    background: #ffffff;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+}
+
+.problem {
+    color: var(--problem);
+    margin: 0;
+}
+
+.note {
+    margin: 0;
+    font-size: 12px;
+    opacity: 0.7;
+}
