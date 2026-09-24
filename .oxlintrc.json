@@ -887,7 +887,8 @@
                 "exceptRange": false,
                 "onlyEquality": false
             }
-        ]
+        ],
+        "agent-crew/no-electron-outside-app": "error"
     },
     "overrides": [
         {
