@@ -35,17 +35,24 @@ there came from a bug a shipped tool in this space hit after it was working.
 Four layers. Each one runs without the layer above it.
 
 ```
-src/ui/         React and xterm.js. Draws. Owns no process.
-src/app.ts      the only file that imports Electron
-src/engine/     every decision. Knows nothing about windows.
-src/crewd/      the service. Owns pseudo terminals. Epic 8.
+src/ui/           React and xterm.js. Draws. Owns no process.
+main              three files. The only layer that imports Electron.
+  src/app.ts      answers the window. Owns the terminals.
+  src/preload.ts  hands the calls to the window.
+  src/bridge.ts   the calls the window may make, as types. Imports nothing.
+src/engine/       every decision. Knows nothing about windows.
+src/crewd/        the service. Owns pseudo terminals. Epic 8.
 ```
 
 **The engine must run with no window open.** If `crew start` works from a
 terminal, the layers are correct. If it stops working, window code has leaked
 into the engine. That is a bug, not a style preference.
 
-Only `src/app.ts` may import `electron`. Nothing else, ever.
+Still four layers. `main` is three files now, not one.
+
+Only `src/app.ts` and `src/preload.ts` may import `electron`. Nothing else,
+ever. The lint rule `agent-crew/no-electron-outside-app` enforces it, and
+`docs/decisions.md` D-19 says why it is two.
 
 ### Component Organization
 

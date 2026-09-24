@@ -27,6 +27,6 @@ exists.
 
 ## Layer Rules
 
-- Only `src/app.ts` imports `electron`
+- Only `src/app.ts` and `src/preload.ts` import `electron`, held by a lint rule
 - The engine runs with no window open
 - Never store what can be derived

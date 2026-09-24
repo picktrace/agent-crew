@@ -17,7 +17,7 @@ This is how the pieces fit together, and why each boundary is where it is.
                       │ messages
   ┌───────────────────▼──────────────────────────────┐
   │  main                                            │
-  │  the only file that imports Electron             │
+  │  three files. The only layer with Electron.      │
   └───────────────────┬──────────────────────────────┘
                       │ function calls
   ┌───────────────────▼──────────────────────────────┐

@@ -11,7 +11,7 @@ down, and anyone can go and see whether it is still true.
 - `firm` we would need new evidence to change it
 - `soft` reasonable, but we have not tested it
 
-Last updated: 2026-09-16. No code has been written.
+Last updated: 2026-09-24. Epic 1 story 1 is built, and story 2 is in progress.
 
 ---
 
@@ -377,9 +377,37 @@ other people read it.
 contribute. They cannot contribute to a repo they cannot see. Moving it to the
 org is worth doing once the epics are agreed.
 
-**The guard that makes flat work.** Every Electron call lives in one file. Nothing
-else imports Electron. The engine must run from the command line with no window
-open. That rule is the test that the layers hold.
+**The guard that makes flat work.** Every Electron call lives in `src/app.ts` or
+`src/preload.ts`, and D-19 below says why it is two. Nothing else imports
+Electron. The engine must run from the command line with no window open. That
+rule is the test that the layers hold.
+
+---
+
+## D-19 Electron lives in two files, not one
+
+**Decided** 2026-09-24 &middot; **firm**
+
+**Chose.** `src/app.ts` and `src/preload.ts` may import `electron`. No other
+file, ever. The lint rule `agent-crew/no-electron-outside-app` holds the line,
+and the list of two file names lives inside the rule.
+
+**Rejected.** One file. We also rejected turning `contextIsolation` off, which is
+the only way one file could have worked.
+
+**The fact that decided it.** A preload script is a small file Electron runs
+inside the window before the page loads. With `contextIsolation` on, which is the
+safe setting, the preload is the only way the window can reach the main process.
+Writing one means importing `contextBridge` and `ipcRenderer` from `electron`. So
+the one file rule could not be met and still leave the window safe.
+
+**What would change our mind.** Nothing while we use Electron. If the window ever
+talks to a separate service over a socket instead, as Epic 8 sketches, the
+preload stops being the bridge and the list goes back to one file.
+
+**What it costs.** Two files to watch instead of one. We pay that with the lint
+rule, so nobody has to remember. It also cost six commits of documents saying one
+file while the code said two, which is what the rule now prevents.
 
 ---
 
