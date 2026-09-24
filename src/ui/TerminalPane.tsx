@@ -2,24 +2,54 @@ import { useEffect, useRef, useState } from 'react'
 import clsx from 'clsx'
 import { FitAddon } from '@xterm/addon-fit'
 import { Terminal } from '@xterm/xterm'
-import { CrewBridge } from '../bridge'
+import { CrewBridge, PaneProgram } from '../bridge'
+import { PaneStatus, readPaneStatus } from '../engine/paneStatus'
 import { startDrainClock } from './drainClock'
 import '@xterm/xterm/css/xterm.css'
 
 const drainIntervalMilliseconds = 16
 const terminalFontSize = 13
 
-function describeExit(exitCode: number | null, exitSignal: number | null): string {
-    if (exitSignal !== null && exitSignal !== 0) {
-        return `The shell was stopped by signal number ${exitSignal}.`
+interface PaneExit {
+    code: number | null
+    signal: number | null
+}
+
+function nameProgram(program: PaneProgram): string {
+    return program === 'agent' ? 'Claude Code' : 'The shell'
+}
+
+function describeExit(program: PaneProgram, exit: PaneExit): string {
+    const name = nameProgram(program)
+    if (exit.signal !== null && exit.signal !== 0) {
+        return `${name} was stopped by signal number ${exit.signal}.`
     }
-    if (exitCode === null) {
-        return 'The shell stopped.'
+    if (exit.code === null) {
+        return `${name} stopped.`
     }
-    if (exitCode === 0) {
-        return 'The shell exited. Pick a folder again to start a new one.'
+    if (exit.code === 0) {
+        return `${name} exited. Click a run button to start it again.`
     }
-    return `The shell exited with code ${exitCode}.`
+    return `${name} exited with code ${exit.code}.`
+}
+
+function describeStatus(status: PaneStatus, program: PaneProgram, exit: PaneExit | null): string | null {
+    if (status === 'starting') {
+        if (program === 'agent') {
+            return 'Starting Claude Code. Your shell reads your profile first, so this takes a second.'
+        }
+        return 'Starting your shell. It reads your profile first, so this takes a second.'
+    }
+    if (status === 'running') {
+        return null
+    }
+    if (status === 'missing') {
+        return 'Claude Code is not installed, or your shell cannot find it. Open a terminal and run claude --version.'
+    }
+    if (exit === null) {
+        return null
+    }
+    return describeExit(program, exit)
 }
 
 function readErrorMessage(error: unknown): string {
@@ -32,11 +62,13 @@ function readErrorMessage(error: unknown): string {
 interface TerminalPaneProps {
     crew: CrewBridge
     paneId: string
+    program: PaneProgram
 }
 
-export function TerminalPane({ crew, paneId }: TerminalPaneProps): JSX.Element {
+export function TerminalPane({ crew, paneId, program }: TerminalPaneProps): JSX.Element {
     const hostRef = useRef<HTMLDivElement>(null)
-    const [exitMessage, setExitMessage] = useState<string | null>(null)
+    const [hasPrinted, setHasPrinted] = useState(false)
+    const [exit, setExit] = useState<PaneExit | null>(null)
     const [problem, setProblem] = useState<string | null>(null)
 
     useEffect(() => {
@@ -45,7 +77,8 @@ export function TerminalPane({ crew, paneId }: TerminalPaneProps): JSX.Element {
             return
         }
 
-        setExitMessage(null)
+        setHasPrinted(false)
+        setExit(null)
         setProblem(null)
 
         const terminal = new Terminal({ fontSize: terminalFontSize, cursorBlink: true })
@@ -64,8 +97,9 @@ export function TerminalPane({ crew, paneId }: TerminalPaneProps): JSX.Element {
                 for (const chunk of chunks) {
                     terminal.write(chunk)
                 }
+                setHasPrinted(true)
             },
-            onExit: (exitCode, exitSignal) => setExitMessage(describeExit(exitCode, exitSignal)),
+            onExit: (exitCode, exitSignal) => setExit({ code: exitCode, signal: exitSignal }),
             onFailure: (error) => setProblem(readErrorMessage(error)),
         })
 
@@ -80,10 +114,19 @@ export function TerminalPane({ crew, paneId }: TerminalPaneProps): JSX.Element {
         }
     }, [crew, paneId])
 
+    const status = readPaneStatus({
+        program,
+        hasPrinted,
+        isRunning: exit === null,
+        exitCode: exit === null ? null : exit.code,
+    })
+    const note = describeStatus(status, program, exit)
+    const isDead = status === 'missing' || status === 'ended'
+
     return (
         <section className="pane">
-            <div className={clsx('screen', exitMessage !== null && 'dead')} ref={hostRef} />
-            {exitMessage !== null && <p className="note">{exitMessage}</p>}
+            <div className={clsx('screen', isDead && 'dead')} ref={hostRef} />
+            {note !== null && <p className={status === 'missing' ? 'problem' : 'note'}>{note}</p>}
             {problem !== null && <p className="problem">{problem}</p>}
         </section>
     )

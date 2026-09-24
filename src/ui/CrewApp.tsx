@@ -5,13 +5,18 @@ import { TerminalPane } from './TerminalPane'
 const paneColumns = 80
 const paneRows = 24
 
+interface OpenPane {
+    id: string
+    program: PaneProgram
+}
+
 function readProblem(error: unknown): string {
     return error instanceof Error ? error.message : 'Something went wrong'
 }
 
 export function CrewApp(): JSX.Element {
     const [folder, setFolder] = useState<string | null>(null)
-    const [paneId, setPane] = useState<string | null>(null)
+    const [pane, setPane] = useState<OpenPane | null>(null)
     const [problem, setProblem] = useState<string | null>(null)
     const { crew } = window
 
@@ -39,7 +44,7 @@ export function CrewApp(): JSX.Element {
         }
         setProblem(null)
         try {
-            setPane(await crew.openPane(folder, paneColumns, paneRows, program))
+            setPane({ id: await crew.openPane(folder, paneColumns, paneRows, program), program })
         } catch (error) {
             setProblem(readProblem(error))
         }
@@ -64,7 +69,7 @@ export function CrewApp(): JSX.Element {
                 <span className="folder">{folder ?? 'no folder yet'}</span>
             </div>
             {problem !== null && <p className="problem">{problem}</p>}
-            {paneId !== null && <TerminalPane crew={crew} paneId={paneId} />}
+            {pane !== null && <TerminalPane crew={crew} paneId={pane.id} program={pane.program} />}
         </main>
     )
 }
