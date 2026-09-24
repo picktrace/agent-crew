@@ -3,7 +3,7 @@ import { TerminalRuntime, TerminalProcess } from './terminalRuntime'
 
 export const nodePtyRuntime: TerminalRuntime = {
     start(options): TerminalProcess {
-        const ptyProcess = pty.spawn(options.shell, [], {
+        const ptyProcess = pty.spawn(options.shell, options.args, {
             cwd: options.folder,
             cols: options.columns,
             rows: options.rows,

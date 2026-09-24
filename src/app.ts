@@ -1,7 +1,7 @@
 import { app, BrowserWindow, dialog, ipcMain } from 'electron'
 import { join } from 'node:path'
 import { CrewChannel, PaneDrain } from './bridge'
-import { resolveShell } from './engine/shell'
+import { PaneProgram, resolveLaunchArguments, resolveShell } from './engine/shell'
 import { OutputQueue } from './engine/terminal/outputQueue'
 import { nodePtyRuntime } from './engine/terminal/nodePtyRuntime'
 import { TerminalSession } from './engine/terminal/terminalSession'
@@ -33,14 +33,15 @@ async function pickFolder(): Promise<string | null> {
 const pauseAtCharacters = 1048576
 const dropAtCharacters = 4194304
 
-function openPane(folder: string, columns: number, rows: number): string {
+function openPane(folder: string, columns: number, rows: number, program: PaneProgram): string {
     if (session !== null) {
         session.close()
     }
 
     // oxlint-disable-next-line node/no-process-env
     const shell = resolveShell(process.env, process.platform)
-    const terminalProcess = nodePtyRuntime.start({ shell, folder, columns, rows })
+    const args = resolveLaunchArguments(program, process.platform)
+    const terminalProcess = nodePtyRuntime.start({ shell, args, folder, columns, rows })
     const queue = new OutputQueue(pauseAtCharacters, dropAtCharacters)
 
     session = new TerminalSession(terminalProcess, queue)
@@ -77,7 +78,9 @@ function resize(paneId: string, columns: number, rows: number): void {
 
 app.whenReady().then(() => {
     ipcMain.handle(pickFolderChannel, () => pickFolder())
-    ipcMain.handle(openPaneChannel, (_event, folder, columns, rows) => openPane(folder, columns, rows))
+    ipcMain.handle(openPaneChannel, (_event, folder, columns, rows, program) =>
+        openPane(folder, columns, rows, program)
+    )
     ipcMain.handle(drainChannel, (_event, paneId) => drain(paneId))
     ipcMain.handle(writeChannel, (_event, paneId, data) => write(paneId, data))
     ipcMain.handle(resizeChannel, (_event, paneId, columns, rows) => resize(paneId, columns, rows))

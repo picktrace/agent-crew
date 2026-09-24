@@ -10,10 +10,18 @@ export function resolveShell(environment: { [key in string]?: string }, platform
     return environment.SHELL || '/bin/sh'
 }
 
-export function resolveLaunchArguments(programName: string, platform: string): string[] {
-    if (platform === 'win32') {
-        return ['/c', programName]
+export type PaneProgram = 'shell' | 'agent'
+
+const agentCommandName = 'claude'
+
+export function resolveLaunchArguments(program: PaneProgram, platform: string): string[] {
+    if (program === 'shell') {
+        return []
     }
 
-    return ['-i', '-l', '-c', programName]
+    if (platform === 'win32') {
+        return ['/c', agentCommandName]
+    }
+
+    return ['-i', '-l', '-c', agentCommandName]
 }

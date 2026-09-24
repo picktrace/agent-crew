@@ -1,4 +1,4 @@
-import { resolveLaunchArguments, resolveShell } from '../shell'
+import { PaneProgram, resolveLaunchArguments, resolveShell } from '../shell'
 
 describe('resolveShell', () => {
     test.each<{
@@ -45,35 +45,41 @@ describe('resolveShell', () => {
 describe('resolveLaunchArguments', () => {
     test.each<{
         name: string
-        programName: string
+        program: PaneProgram
         platform: string
         expected: string[]
     }>([
         {
-            name: 'runs the program through a login and interactive shell on macOS',
-            programName: 'claude',
+            name: 'gives the shell no arguments on macOS',
+            program: 'shell',
+            platform: 'darwin',
+            expected: [],
+        },
+        {
+            name: 'gives the shell no arguments on win32',
+            program: 'shell',
+            platform: 'win32',
+            expected: [],
+        },
+        {
+            name: 'runs the agent through a login and interactive shell on macOS',
+            program: 'agent',
             platform: 'darwin',
             expected: ['-i', '-l', '-c', 'claude'],
         },
         {
-            name: 'uses the same flags on linux',
-            programName: 'claude',
+            name: 'uses the same flags for the agent on linux',
+            program: 'agent',
             platform: 'linux',
             expected: ['-i', '-l', '-c', 'claude'],
         },
         {
-            name: 'passes the program name through unchanged',
-            programName: 'codex',
-            platform: 'darwin',
-            expected: ['-i', '-l', '-c', 'codex'],
-        },
-        {
-            name: 'uses the cmd.exe flag on win32, where there is no login shell',
-            programName: 'claude',
+            name: 'uses the cmd.exe flag for the agent on win32, where there is no login shell',
+            program: 'agent',
             platform: 'win32',
             expected: ['/c', 'claude'],
         },
-    ])('$name', ({ programName, platform, expected }) => {
-        expect(resolveLaunchArguments(programName, platform)).toEqual(expected)
+    ])('$name', ({ program, platform, expected }) => {
+        expect(resolveLaunchArguments(program, platform)).toEqual(expected)
     })
 })

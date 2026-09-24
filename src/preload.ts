@@ -9,7 +9,7 @@ const resizeChannel: CrewChannel = 'crew:resize'
 
 const crew: CrewBridge = {
     pickFolder: () => ipcRenderer.invoke(pickFolderChannel),
-    openPane: (folder, columns, rows) => ipcRenderer.invoke(openPaneChannel, folder, columns, rows),
+    openPane: (folder, columns, rows, program) => ipcRenderer.invoke(openPaneChannel, folder, columns, rows, program),
     drain: (paneId) => ipcRenderer.invoke(drainChannel, paneId),
     write: (paneId, data) => ipcRenderer.invoke(writeChannel, paneId, data),
     resize: (paneId, columns, rows) => ipcRenderer.invoke(resizeChannel, paneId, columns, rows),

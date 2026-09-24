@@ -14,6 +14,7 @@ export interface TerminalProcess {
 
 export interface TerminalStartOptions {
     shell: string
+    args: string[]
     folder: string
     columns: number
     rows: number

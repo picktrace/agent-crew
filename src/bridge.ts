@@ -1,3 +1,7 @@
+import type { PaneProgram } from './engine/shell'
+
+export type { PaneProgram }
+
 export interface PaneCounters {
     queuedCharacters: number
     peakQueuedCharacters: number
@@ -15,7 +19,7 @@ export interface PaneDrain {
 
 export interface CrewBridge {
     pickFolder(): Promise<string | null>
-    openPane(folder: string, columns: number, rows: number): Promise<string>
+    openPane(folder: string, columns: number, rows: number, program: PaneProgram): Promise<string>
     drain(paneId: string): Promise<PaneDrain>
     write(paneId: string, data: string): Promise<void>
     resize(paneId: string, columns: number, rows: number): Promise<void>
