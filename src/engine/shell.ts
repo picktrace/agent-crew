@@ -9,3 +9,11 @@ export function resolveShell(environment: { [key in string]?: string }, platform
 
     return environment.SHELL || '/bin/sh'
 }
+
+export function resolveLaunchArguments(programName: string, platform: string): string[] {
+    if (platform === 'win32') {
+        return ['/c', programName]
+    }
+
+    return ['-i', '-l', '-c', programName]
+}
