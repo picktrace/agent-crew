@@ -411,6 +411,47 @@ file while the code said two, which is what the rule now prevents.
 
 ---
 
+## D-20 We do not answer the agent's trust question
+
+**Decided** 2026-09-24 &middot; **firm**
+
+**Chose.** When Claude Code asks whether the developer trusts a folder, we show
+the question and do nothing. The person answers it themselves, in the terminal.
+
+**Rejected.** Answering it for them, by sending the keystrokes that pick "Yes".
+
+**The fact that decided it.** Claude Code 2.1.281 asks this on the first run in
+any folder it has not seen:
+
+```
+Quick safety check: Is this a project you created or one you trust?
+> No, exit
+  Yes, I trust this folder
+Enter to confirm, Esc to cancel
+```
+
+The cursor starts on **No, exit**. That default is a deliberate choice by the
+people who wrote it, and it is the safe one. Answering for the developer would
+replace their judgement with ours, on a question about whether code they have not
+read may run on their machine.
+
+It costs them one keypress, once per folder, while they are already looking at
+the terminal.
+
+The prototype did answer it, because it started many agents unattended and nobody
+was watching. We are not there yet. When Epic 6 adds autonomy levels, this
+becomes a setting with an off state, not a default.
+
+**What would change our mind.** A robot mode where agents start with nobody
+watching. Then the question has to be answered by something, and the honest
+answer is a setting the developer turned on once, knowingly. Never a default.
+
+**What it costs.** One keypress per new folder. And a person opening ten
+worktrees at once answers it ten times, which is the thing Epic 6 will have to
+solve properly.
+
+---
+
 # What is not decided
 
 | Question | Waiting on | Blocks |
