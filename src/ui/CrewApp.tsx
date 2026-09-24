@@ -30,11 +30,13 @@ export function CrewApp(): JSX.Element {
 
     return (
         <main>
-            <button type="button" onClick={pickFolder}>
-                Pick a folder
-            </button>
-            <p>{folder ?? 'no folder yet'}</p>
-            {problem !== null && <p>{problem}</p>}
+            <div className="bar">
+                <button type="button" onClick={pickFolder}>
+                    Pick a folder
+                </button>
+                <span className="folder">{folder ?? 'no folder yet'}</span>
+            </div>
+            {problem !== null && <p className="problem">{problem}</p>}
             {paneId !== null && <TerminalPane crew={crew} paneId={paneId} />}
         </main>
     )

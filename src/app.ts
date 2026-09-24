@@ -11,6 +11,8 @@ let session: TerminalSession | null = null
 const pickFolderChannel: CrewChannel = 'crew:pickFolder'
 const openPaneChannel: CrewChannel = 'crew:openPane'
 const drainChannel: CrewChannel = 'crew:drain'
+const writeChannel: CrewChannel = 'crew:write'
+const resizeChannel: CrewChannel = 'crew:resize'
 
 async function pickFolder(): Promise<string | null> {
     if (mainWindow === null) {
@@ -59,10 +61,27 @@ function drain(paneId: string): PaneDrain {
     }
 }
 
+function write(paneId: string, data: string): void {
+    if (session === null || session.id !== paneId) {
+        throw new Error(`no pane with id ${paneId}`)
+    }
+    session.write(data)
+}
+
+function resize(paneId: string, columns: number, rows: number): void {
+    if (session === null || session.id !== paneId) {
+        throw new Error(`no pane with id ${paneId}`)
+    }
+    session.resize(columns, rows)
+}
+
 app.whenReady().then(() => {
     ipcMain.handle(pickFolderChannel, () => pickFolder())
     ipcMain.handle(openPaneChannel, (_event, folder, columns, rows) => openPane(folder, columns, rows))
     ipcMain.handle(drainChannel, (_event, paneId) => drain(paneId))
+    ipcMain.handle(writeChannel, (_event, paneId, data) => write(paneId, data))
+    ipcMain.handle(resizeChannel, (_event, paneId, columns, rows) => resize(paneId, columns, rows))
+
     mainWindow = new BrowserWindow({
         width: 1280,
         height: 800,

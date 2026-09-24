@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import clsx from 'clsx'
 import { FitAddon } from '@xterm/addon-fit'
 import { Terminal } from '@xterm/xterm'
 import { CrewBridge } from '../bridge'
@@ -52,6 +53,9 @@ export function TerminalPane({ crew, paneId }: TerminalPaneProps): JSX.Element {
         terminal.loadAddon(fitAddon)
         terminal.open(host)
         fitAddon.fit()
+        crew.resize(paneId, terminal.cols, terminal.rows).catch((error: unknown) => {
+            setProblem(readErrorMessage(error))
+        })
 
         const stopClock = startDrainClock({
             intervalMilliseconds: drainIntervalMilliseconds,
@@ -65,15 +69,20 @@ export function TerminalPane({ crew, paneId }: TerminalPaneProps): JSX.Element {
             onFailure: (error) => setProblem(readErrorMessage(error)),
         })
 
+        const keystrokes = terminal.onData((data) => {
+            crew.write(paneId, data).catch((error: unknown) => setProblem(readErrorMessage(error)))
+        })
+
         return () => {
             stopClock()
             terminal.dispose()
+            keystrokes.dispose()
         }
     }, [crew, paneId])
 
     return (
         <section className="pane">
-            <div className="screen" ref={hostRef} />
+            <div className={clsx('screen', exitMessage !== null && 'dead')} ref={hostRef} />
             {exitMessage !== null && <p className="note">{exitMessage}</p>}
             {problem !== null && <p className="problem">{problem}</p>}
         </section>

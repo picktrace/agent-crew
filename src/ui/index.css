@@ -1,9 +1,14 @@
 :root {
     color-scheme: light;
-    --ink: #1a1410;
     --paper: #fffcf5;
+    --sunk: #f7f1e4;
+    --ink: #1a1410;
+    --ink-soft: #6b6055;
     --rule: #e6ddcb;
+    --amber: #d9480f;
+    --amber-soft: #fdf0e6;
     --problem: #c2255c;
+    --problem-soft: #fdeef3;
     --mono: ui-monospace, 'SF Mono', Menlo, monospace;
 }
 
@@ -24,6 +29,7 @@ body {
     font-family:
         system-ui,
         -apple-system,
+        'Segoe UI',
         sans-serif;
     font-size: 14px;
 }
@@ -36,30 +42,95 @@ main {
     gap: 10px;
 }
 
+/* the top bar */
+
+.bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+button {
+    font: inherit;
+    font-weight: 500;
+    padding: 6px 14px;
+    border: 1px solid var(--ink);
+    border-radius: 4px;
+    background: var(--paper);
+    color: var(--ink);
+    cursor: pointer;
+}
+
+button:hover {
+    background: var(--amber-soft);
+    border-color: var(--amber);
+    color: var(--amber);
+}
+
+button:focus-visible {
+    outline: 2px solid var(--amber);
+    outline-offset: 2px;
+}
+
+.folder {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-soft);
+    word-break: break-all;
+}
+
+/* the pane */
+
 .pane {
     display: flex;
     flex-direction: column;
     flex: 1;
     min-height: 0;
-    gap: 8px;
+    gap: 0;
 }
 
 .screen {
     flex: 1;
     min-height: 0;
-    padding: 6px;
+    padding: 8px;
     background: #ffffff;
     border: 1px solid var(--rule);
-    border-radius: 4px;
+    border-radius: 4px 4px 0 0;
 }
 
+.screen.dead {
+    opacity: 0.45;
+}
+
+/* the strip under the terminal */
+
+.note,
 .problem {
-    color: var(--problem);
     margin: 0;
+    padding: 8px 12px;
+    font-size: 12.5px;
+    border: 1px solid;
+    border-top: 0;
+    border-radius: 0 0 4px 4px;
 }
 
 .note {
-    margin: 0;
-    font-size: 12px;
-    opacity: 0.7;
+    background: var(--sunk);
+    border-color: var(--rule);
+    color: var(--ink-soft);
+}
+
+.problem {
+    background: var(--problem-soft);
+    border-color: var(--problem);
+    color: var(--problem);
+    font-weight: 500;
+}
+
+/* a problem shown before any pane exists */
+
+main > .problem {
+    border-top: 1px solid var(--problem);
+    border-radius: 4px;
 }
