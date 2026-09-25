@@ -5,7 +5,34 @@ live cost readout out.
 
 The command is `crew`.
 
-**Status: design only. No code has been written.**
+**Status: Epic 1 stories 1 and 2 are built.** Pick a folder and Claude Code
+starts in it, in a real terminal you can type into.
+
+---
+
+## Run it
+
+```bash
+pnpm install
+pnpm dev
+```
+
+Click **Pick a folder**. Claude Code starts in that folder.
+
+### Settings
+
+Both are environment variables today. They become keys in
+`~/.crew/settings.json` in Epic 10.
+
+| Variable | Default | What it does |
+|---|---|---|
+| `CREW_PERMISSION_MODE` | unset | passed to Claude Code as `--permission-mode`. Takes `acceptEdits`, `auto`, `bypassPermissions`, `manual`, `dontAsk` or `plan`. Unset means no flag, so Claude Code decides |
+| `CREW_TRUST` | on | when on, a folder you pick is marked trusted, so Claude Code does not ask. Set it to `0` to be asked instead |
+
+`CREW_TRUST` writes `hasTrustDialogAccepted` into `~/.claude.json`, and keeps one
+copy of that file as `~/.claude.json.crew-backup`. It does not touch permission
+prompts. Claude Code still asks before it runs a command or edits a file.
+`docs/decisions.md` D-20 has the reasoning.
 
 ---
 
@@ -74,17 +101,34 @@ there rather than hidden.
 ```
 docs/plan.md           the strategy, and 10 epics with stories
 docs/architecture.md   four layers, the interfaces, what breaks at scale
-docs/decisions.md      18 decisions, each with the fact behind it
+docs/decisions.md      20 decisions, each with the fact behind it
 docs/evidence.md       every number, with the command that produced it
 docs/state-model.md    the three tiers of state
 AGENTS.md              how to write code here. Shared with web-client.
+
+src/app.ts             the main process. Owns the terminals
+src/preload.ts         the bridge into the window
+src/bridge.ts          the calls the window may make, as types
+src/engine/            every decision. No Electron, no window
+src/ui/                React and xterm.js. Draws, owns no process
 ```
 
-Nothing is built. One commit, all design.
+## Where Epic 1 has got to
 
-## The first thing to build
+```
+1   pick a folder and see a working terminal      done
+2   start an agent in it and type into it         done
+3   split the pane, and the split survives        next
+4   resize the window, the agent redraws
+5   scroll back 10 minutes
+6   resume yesterday's session in that folder
+7   one command prints median and worst key latency
+8   the queued and dropped counts, and dropped is 0
+```
 
-Epic 1: a terminal in a window, with an agent in it.
+The terminal came first, before settings and before worktrees. It is the
+riskiest part and the most visible one. `docs/decisions.md` D-16 has the
+evidence for that order.
 
-Not settings. Not worktrees. The terminal, because it is the riskiest part and
-the most visible one. `docs/decisions.md` D-16 has the evidence for that order.
+The commit messages carry most of what was learned building it. Each one says
+what a reader cannot get from the diff.

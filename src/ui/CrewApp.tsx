@@ -24,7 +24,7 @@ export function CrewApp(): JSX.Element {
         return <main>This page is not running inside crew, so no machine can be reached</main>
     }
 
-    const pickFolder = async (): Promise<void> => {
+    const pickFolderAndRunAgent = async (): Promise<void> => {
         setProblem(null)
         try {
             const picked = await crew.pickFolder()
@@ -33,18 +33,9 @@ export function CrewApp(): JSX.Element {
             }
             setPane(null)
             setFolder(picked)
-        } catch (error) {
-            setProblem(readProblem(error))
-        }
-    }
 
-    const runProgram = async (program: PaneProgram): Promise<void> => {
-        if (folder === null) {
-            return
-        }
-        setProblem(null)
-        try {
-            setPane({ id: await crew.openPane(folder, paneColumns, paneRows, program), program })
+            const program: PaneProgram = 'agent'
+            setPane({ id: await crew.openPane(picked, paneColumns, paneRows, program), program })
         } catch (error) {
             setProblem(readProblem(error))
         }
@@ -53,19 +44,9 @@ export function CrewApp(): JSX.Element {
     return (
         <main>
             <div className="bar">
-                <button type="button" onClick={pickFolder}>
+                <button type="button" onClick={pickFolderAndRunAgent}>
                     Pick a folder
                 </button>
-                {folder !== null && (
-                    <>
-                        <button type="button" onClick={() => runProgram('shell')}>
-                            Run a shell
-                        </button>
-                        <button type="button" onClick={() => runProgram('agent')}>
-                            Run Claude Code
-                        </button>
-                    </>
-                )}
                 <span className="folder">{folder ?? 'no folder yet'}</span>
             </div>
             {problem !== null && <p className="problem">{problem}</p>}

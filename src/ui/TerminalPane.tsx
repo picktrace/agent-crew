@@ -28,7 +28,7 @@ function describeExit(program: PaneProgram, exit: PaneExit): string {
         return `${name} stopped.`
     }
     if (exit.code === 0) {
-        return `${name} exited. Click a run button to start it again.`
+        return `${name} exited. Pick a folder to start it again.`
     }
     return `${name} exited with code ${exit.code}.`
 }

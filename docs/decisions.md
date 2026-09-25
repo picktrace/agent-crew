@@ -411,44 +411,87 @@ file while the code said two, which is what the rule now prevents.
 
 ---
 
-## D-20 We do not answer the agent's trust question
+## D-20 We trust the folder the developer just picked
 
-**Decided** 2026-09-24 &middot; **firm**
+**Decided** 2026-09-24 &middot; **firm** &middot; **reversed the same day**
 
-**Chose.** When Claude Code asks whether the developer trusts a folder, we show
-the question and do nothing. The person answers it themselves, in the terminal.
+This entry first said the opposite. It is rewritten rather than deleted, because
+what changed our mind is the useful part.
 
-**Rejected.** Answering it for them, by sending the keystrokes that pick "Yes".
+**Chose.** When a developer picks a folder and an agent starts, we mark that
+folder trusted in `~/.claude.json`, so Claude Code does not ask. `CREW_TRUST=0`
+turns it off and gives the question back.
+
+**Rejected, twice over.** Leaving the question to the person, which was the first
+version of this entry. And `--dangerously-skip-permissions`, which would also
+hide the question, by switching off every permission check at the same time.
 
 **The fact that decided it.** Claude Code 2.1.281 asks this on the first run in
-any folder it has not seen:
+any folder it has not seen, with the cursor starting on **No, exit**:
 
 ```
 Quick safety check: Is this a project you created or one you trust?
 > No, exit
   Yes, I trust this folder
-Enter to confirm, Esc to cancel
 ```
 
-The cursor starts on **No, exit**. That default is a deliberate choice by the
-people who wrote it, and it is the safe one. Answering for the developer would
-replace their judgement with ours, on a question about whether code they have not
-read may run on their machine.
+One keypress is nothing. Epic 2 is what changes the number. It makes one worktree
+per repo the work touches, and the default is 8 repos. That is 8 of these before
+a single agent starts, every ticket. The first version of this entry pushed that
+problem to Epic 6. It arrives in Epic 2.
 
-It costs them one keypress, once per folder, while they are already looking at
-the terminal.
+**What bounds it.** Four things:
 
-The prototype did answer it, because it started many agents unattended and nobody
-was watching. We are not there yet. When Epic 6 adds autonomy levels, this
-becomes a setting with an off state, not a default.
+1. Only the folder the person picked in a native dialog, seconds earlier. Never a
+   path from a list, a scan, or a settings file.
+2. Only when an agent pane opens. Never on picking alone.
+3. `CREW_TRUST=0` and none of it runs.
+4. One copy of `~/.claude.json` is kept as `~/.claude.json.crew-backup`, the
+   first time and never overwritten. The write goes to a temp file and is
+   renamed, so a crash leaves the old file whole.
 
-**What would change our mind.** A robot mode where agents start with nobody
-watching. Then the question has to be answered by something, and the honest
-answer is a setting the developer turned on once, knowingly. Never a default.
+It does not touch permissions. Claude Code still asks before it runs a command or
+edits a file.
 
-**What it costs.** One keypress per new folder. And a person opening ten
-worktrees at once answers it ten times, which is the thing Epic 6 will have to
-solve properly.
+**What the others do.** Orca writes trust config for Cursor, Copilot, Codex and
+Antigravity. For Claude it ships `--dangerously-skip-permissions` as the default
+a person gets without choosing. Herdr does neither, and you answer the question
+yourself. Ours is the narrowest of the three: one dialog, and every permission
+prompt kept.
+
+**What would change our mind.** Claude Code offering a flag that skips the trust
+dialog without touching permissions. Then the flag replaces this code, and we
+stop writing to a file we do not own.
+
+**What it costs.** A folder trusted by crew is trusted in the developer's own
+terminal too. We write to a file another program owns, and its shape could change
+under us. The narrowing to one just-picked folder is what keeps that honest.
+
+---
+
+## D-21 The permission mode is a setting, not our choice
+
+**Decided** 2026-09-24 &middot; **firm**
+
+**Chose.** `CREW_PERMISSION_MODE` is passed to Claude Code as
+`--permission-mode`. It takes the six names Claude Code accepts: `acceptEdits`,
+`auto`, `bypassPermissions`, `manual`, `dontAsk` and `plan`. Unset means no flag
+at all, so Claude Code does whatever it does on its own.
+
+**Rejected.** Picking one ourselves. Either extreme would be a decision made by
+accident. No flag means a person approves every command. `bypassPermissions`
+means nothing is ever approved.
+
+**The fact that decided it.** `claude --help` lists six modes. So this is a dial
+with six positions, not a switch. How much an agent may do without asking is the
+whole subject of Epic 6, and it has four autonomy levels waiting for it. Shipping
+a default today would answer that question before the conversation happens.
+
+**What would change our mind.** Epic 6. It picks a default on purpose, with all
+six on the table, and it becomes a key in `~/.crew/settings.json`.
+
+**What it costs.** Until Epic 6, a person who wants an agent to work unattended
+has to find an environment variable. The README names it.
 
 ---
 
@@ -467,7 +510,7 @@ solve properly.
 
 # What changed during the design, and why
 
-Four reversals. Each one was caused by one new fact.
+Six reversals. Each one was caused by one new fact.
 
 | Was | Became | The fact that turned it |
 |---|---|---|
@@ -475,5 +518,7 @@ Four reversals. Each one was caused by one new fact.
 | tmux | we own the terminals | tmux does not run on Windows |
 | one agent per repo | one lead agent | $2.71 on one ticket, read twice |
 | settings first, terminal third | terminal first | their commit 4, on day 1 |
+| Electron in one file | two files | a preload cannot be written without it |
+| the person answers the trust question | we answer it | Epic 2 makes 8 worktrees, so 8 questions |
 
 A design that never reverses has not been tested against anything.
